@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Receipt Survey Filler</title>
+  <style>
+    :root { --bg:#0e1116; --fg:#e6edf3; --mut:#8b949e; --acc:#2f81f7; --card:#161b22; --bd:#30363d; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:16px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--fg); }
+    .wrap { max-width:720px; margin:40px auto; padding:0 20px; }
+    h1 { margin:0 0 8px; font-size:28px; }
+    p.sub { color:var(--mut); margin:0 0 28px; }
+    .card { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:24px; margin-bottom:20px; }
+    label { display:block; font-weight:600; margin-bottom:8px; }
+    input[type=file], textarea { width:100%; background:#0d1117; color:var(--fg); border:1px solid var(--bd);
+      border-radius:8px; padding:10px 12px; font:14px monospace; }
+    textarea { min-height:150px; resize:vertical; }
+    .row { display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--mut); }
+    .row::before, .row::after { content:""; flex:1; height:1px; background:var(--bd); }
+    button { background:var(--acc); color:white; border:0; padding:12px 20px; border-radius:8px;
+      font-weight:600; cursor:pointer; font-size:15px; }
+    button:hover { filter:brightness(1.1); }
+    .flash { background:#4a1f1f; border:1px solid #8b3a3a; color:#ffdddd; padding:10px 14px; border-radius:8px; margin-bottom:16px; }
+    ul.retailers { display:flex; flex-wrap:wrap; gap:6px; padding:0; margin:8px 0 0; list-style:none; }
+    ul.retailers li { background:#21262d; border:1px solid var(--bd); padding:3px 10px; border-radius:999px; font-size:12px; color:var(--mut); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Receipt Survey Filler</h1>
+    <p class="sub">Upload a receipt photo. We scan it, find the survey code at the bottom, complete the survey with randomized answers, and return the completion code.</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+    {% endwith %}
+
+    <form class="card" action="{{ url_for('process') }}" method="post" enctype="multipart/form-data">
+      <label for="receipt">Receipt image</label>
+      <input id="receipt" name="receipt" type="file" accept="image/*">
+
+      <div class="row">or</div>
+
+      <label for="receipt_text">Paste receipt text</label>
+      <textarea id="receipt_text" name="receipt_text" placeholder="Paste OCR'd text from a receipt here..."></textarea>
+
+      <div style="margin-top:18px;"><button type="submit">Scan &amp; Complete Survey</button></div>
+    </form>
+
+    <div class="card">
+      <label>Supported retailers</label>
+      <ul class="retailers">
+        <li>Walmart</li><li>Target</li><li>Home Depot</li><li>Lowe's</li>
+        <li>McDonald's</li><li>Walgreens</li><li>CVS</li><li>Kroger</li>
+        <li>Publix</li><li>Chick-fil-A</li><li>Subway</li><li>Dollar General</li>
+        <li>+ generic</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

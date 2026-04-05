@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Survey Result</title>
+  <style>
+    :root { --bg:#0e1116; --fg:#e6edf3; --mut:#8b949e; --acc:#2f81f7; --ok:#3fb950; --err:#f85149; --card:#161b22; --bd:#30363d; }
+    * { box-sizing: border-box; }
+    body { margin:0; font:16px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--fg); }
+    .wrap { max-width:860px; margin:40px auto; padding:0 20px; }
+    a.back { color:var(--acc); text-decoration:none; font-size:14px; }
+    a.back:hover { text-decoration:underline; }
+    h1 { margin:10px 0 20px; }
+    .card { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:20px 22px; margin-bottom:18px; }
+    .card h2 { margin:0 0 14px; font-size:18px; color:var(--mut); text-transform:uppercase; letter-spacing:.04em; }
+    .k { color:var(--mut); font-size:13px; }
+    .v { font-weight:600; word-break:break-word; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 24px; }
+    .big { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:28px; color:var(--ok); letter-spacing:.05em; }
+    .bad { color:var(--err); }
+    .pill { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+    .pill.ok { background:#0f5132; color:#d1f7c4; }
+    .pill.err { background:#5a1a1a; color:#ffd1d1; }
+    pre { background:#0d1117; border:1px solid var(--bd); border-radius:8px; padding:12px; overflow:auto;
+          font-size:12px; color:var(--mut); white-space:pre-wrap; word-break:break-word; max-height:240px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    td { padding:6px 8px; border-bottom:1px solid var(--bd); vertical-align:top; }
+    td:first-child { color:var(--mut); width:60%; }
+    td:last-child { font-weight:600; text-align:right; }
+    ul.items { margin:0; padding-left:18px; color:var(--mut); font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="{{ url_for('index') }}">&larr; Scan another receipt</a>
+    <h1>Survey Result</h1>
+
+    <div class="card">
+      <h2>Survey
+        {% if survey.success %}<span class="pill ok">completed</span>
+        {% else %}<span class="pill err">failed</span>{% endif %}
+      </h2>
+      {% if survey.success %}
+        <div class="k">Completion code</div>
+        <div class="big">{{ survey.completion_code }}</div>
+        <div style="margin-top:14px;" class="grid">
+          <div><div class="k">Retailer</div><div class="v">{{ survey.retailer or 'Generic' }}</div></div>
+          <div><div class="k">Reward</div><div class="v">{{ survey.reward }}</div></div>
+          <div><div class="k">Survey URL</div><div class="v">{{ survey.survey_url or '—' }}</div></div>
+          <div><div class="k">Code from receipt</div><div class="v">{{ survey.survey_code_used }}</div></div>
+          <div><div class="k">Duration</div><div class="v">{{ survey.duration_seconds }} s</div></div>
+        </div>
+        <p style="color:var(--mut); margin-top:16px;">{{ survey.message }}</p>
+      {% else %}
+        <p class="bad">{{ survey.message }}</p>
+      {% endif %}
+    </div>
+
+    {% if survey.answers %}
+    <div class="card">
+      <h2>Randomized Answers Submitted</h2>
+      <table>
+        {% for a in survey.answers %}
+        <tr><td>{{ a.question }}</td><td>{{ a.answer }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <h2>Extracted Receipt Details</h2>
+      <div class="grid">
+        <div><div class="k">Retailer</div><div class="v">{{ receipt.retailer or '—' }}</div></div>
+        <div><div class="k">Date</div><div class="v">{{ receipt.date or '—' }}</div></div>
+        <div><div class="k">Total</div><div class="v">{{ '$' ~ receipt.total if receipt.total else '—' }}</div></div>
+        <div><div class="k">Survey code</div><div class="v">{{ receipt.survey_code or '—' }}</div></div>
+      </div>
+      {% if receipt.items %}
+      <div style="margin-top:14px;">
+        <div class="k">Items</div>
+        <ul class="items">{% for i in receipt.items %}<li>{{ i }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      <div style="margin-top:14px;">
+        <div class="k">OCR text</div>
+        <pre>{{ receipt.raw_text }}</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
