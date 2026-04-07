@@ -1,19 +1,24 @@
 """Flask app: upload a receipt -> OCR -> find survey code -> auto-complete survey."""
 from __future__ import annotations
 
+import logging
 import os
+import traceback
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from receipt_scanner import scan_receipt, parse_receipt, ReceiptDetails
 from survey_automator import complete_survey
 
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "bmp", "tiff", "webp"}
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "bmp", "tiff", "webp", "heic", "heif"}
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
-app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24).hex())
+app.secret_key = os.environ.get("SECRET_KEY", "receipt-survey-filler-dev-key")
 
 
 def _allowed(filename: str) -> bool:
@@ -41,15 +46,21 @@ def process():
         if not f or not f.filename:
             flash("No file selected.")
             return redirect(url_for("index"))
-        if not _allowed(secure_filename(f.filename)):
+        fname = secure_filename(f.filename)
+        log.info("Uploaded file: %s (secured: %s)", f.filename, fname)
+        if not _allowed(fname):
             flash(f"Unsupported file type. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}.")
             return redirect(url_for("index"))
         try:
-            receipt = scan_receipt(f.read())
+            image_bytes = f.read()
+            log.info("Read %d bytes from upload", len(image_bytes))
+            receipt = scan_receipt(image_bytes)
         except RuntimeError as e:
+            log.error("RuntimeError during scan: %s", e)
             flash(str(e))
             return redirect(url_for("index"))
         except Exception as e:
+            log.error("Error during scan:\n%s", traceback.format_exc())
             flash(f"Failed to read receipt image: {e}")
             return redirect(url_for("index"))
 
