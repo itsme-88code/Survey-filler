@@ -69,6 +69,7 @@ class SurveyResult:
 
 # Retailer-specific reward offers seen on receipts.
 RETAILER_REWARDS = {
+    "Tim Hortons": "French Vanilla, Hot Chocolate, or Iced Coffee for $1",
     "Walmart": "$1,000 Walmart gift card sweepstakes entry",
     "Target": "$500 Target GiftCard sweepstakes entry",
     "Home Depot": "$5,000 Home Depot gift card sweepstakes entry",

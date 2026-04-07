@@ -85,6 +85,12 @@ RETAILER_PATTERNS = [
         "code_regex": r"code[:\s#]*([0-9]{6,})",
     },
     {
+        "name": "Tim Hortons",
+        "url": "https://telltims.ca",
+        "keywords": ["tim hortons", "telltims", "tims"],
+        "code_regex": r"(?:survey\s*code[:\s]*|^)\s*([0-9]{4}[\s-][0-9]{4}[\s-][0-9]{4}[\s-][0-9]{4}[\s-][0-9]{5})",
+    },
+    {
         "name": "Dollar General",
         "url": "https://dgcustomerfirst.com",
         "keywords": ["dollar general", "dgcustomerfirst"],
