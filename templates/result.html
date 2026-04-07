@@ -76,10 +76,10 @@
         <div><div class="k">Total</div><div class="v">{{ '$' ~ receipt.total if receipt.total else '—' }}</div></div>
         <div><div class="k">Survey code</div><div class="v">{{ receipt.survey_code or '—' }}</div></div>
       </div>
-      {% if receipt.items %}
+      {% if receipt.line_items %}
       <div style="margin-top:14px;">
         <div class="k">Items</div>
-        <ul class="items">{% for i in receipt.items %}<li>{{ i }}</li>{% endfor %}</ul>
+        <ul class="items">{% for i in receipt.line_items %}<li>{{ i }}</li>{% endfor %}</ul>
       </div>
       {% endif %}
       <div style="margin-top:14px;">

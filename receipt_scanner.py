@@ -126,7 +126,7 @@ class ReceiptDetails:
             "store_location": self.store_location,
             "date": self.date,
             "total": self.total,
-            "items": self.items,
+            "line_items": self.items,
             "raw_text": self.raw_text,
         }
 
